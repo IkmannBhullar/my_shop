@@ -12,6 +12,13 @@ const cors = require('cors');
 // This command loads the environment variables (secrets).
 dotenv.config();
 
+
+
+const connectDB = require('./config/db'); // <--- ADD THIS LINE
+
+connectDB(); // <--- ADD THIS LINE (Call the function to connect)
+
+// ... rest of the code ...
 // Initialize the express application. 'app' is now our server object.
 const app = express();
 
@@ -37,3 +44,4 @@ app.listen(PORT, () => {
     // This logs a message to your terminal so you know it worked.
     console.log(`Server running on port ${PORT}`);
 });
+
