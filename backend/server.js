@@ -8,6 +8,8 @@ const dotenv = require('dotenv');
 // We need 'cors' to allow our future Frontend to talk to this Backend.
 const cors = require('cors');
 
+const Product = require('./models/productModel');
+
 // 2. CONFIGURATION
 // This command loads the environment variables (secrets).
 dotenv.config();
@@ -29,11 +31,20 @@ app.use(express.json());
 // This tells the browser it's okay for the frontend to request data from here.
 app.use(cors());
 
-// 4. ROUTES (The URL paths)
-// A simple test route. If you visit http://localhost:5000/, this function runs.
-// req = request (what the user sent us), res = response (what we send back).
-app.get('/', (req, res) => {
-    res.send('API is running...'); 
+// Get all products
+app.get('/api/products', async (req, res) => {
+    const products = await Product.find({}); // Fetch everything from MongoDB
+    res.json(products);
+});
+
+// Get single product (we will need this later)
+app.get('/api/products/:id', async (req, res) => {
+    const product = await Product.findById(req.params.id);
+    if (product) {
+        res.json(product);
+    } else {
+        res.status(404).json({ message: 'Product not found' });
+    }
 });
 
 // Starts the server on port 5001
