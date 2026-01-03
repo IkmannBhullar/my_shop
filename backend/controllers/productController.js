@@ -40,4 +40,26 @@ const createProduct = async (req, res) => {
     res.status(201).json(createdProduct);
 };
 
-module.exports = { getProducts, getProductById, createProduct };
+// @desc    Delete a product
+// @route   DELETE /api/products/:id
+// @access  Private
+const deleteProduct = async (req, res) => {
+    const product = await Product.findById(req.params.id);
+
+    if (product) {
+        // CHECK OWNERSHIP: Does the logged-in user match the product owner?
+        if (product.user.toString() === req.user._id.toString()) {
+            
+            // Use deleteOne to remove it
+            await Product.deleteOne({ _id: req.params.id });
+            res.json({ message: 'Product removed' });
+            
+        } else {
+            res.status(401).json({ message: 'Not authorized to delete this item' });
+        }
+    } else {
+        res.status(404).json({ message: 'Product not found' });
+    }
+};
+
+module.exports = { getProducts, getProductById, createProduct, deleteProduct };

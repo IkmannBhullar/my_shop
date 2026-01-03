@@ -6,6 +6,9 @@ import axios from 'axios';
 const ProductScreen = () => {
   const [product, setProduct] = useState({});
   const { id } = useParams(); // Get the ID from the URL
+  const userInfo = localStorage.getItem('userInfo')
+    ? JSON.parse(localStorage.getItem('userInfo'))
+    : null;
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -16,6 +19,25 @@ const ProductScreen = () => {
 
     fetchProduct();
   }, [id]);
+
+  const deleteHandler = async () => {
+    if (window.confirm('Are you sure you want to delete this listing?')) {
+      try {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        };
+
+        await axios.delete(`/api/products/${id}`, config);
+        
+        alert('Product Deleted!');
+        window.location.href = '/'; // Go back home
+      } catch (error) {
+        alert('You cannot delete this item (You do not own it!)');
+      }
+    }
+  };
 
   return (
     <Container>
@@ -55,8 +77,7 @@ const ProductScreen = () => {
                   </Col>
                 </Row>
               </ListGroup.Item>
-
-              <ListGroup.Item>
+<ListGroup.Item>
                 <Button
                   className='btn-block'
                   type='button'
@@ -65,6 +86,19 @@ const ProductScreen = () => {
                   Add To Cart
                 </Button>
               </ListGroup.Item>
+
+              {/* NEW CODE: Only show if user owns the product */}
+              {userInfo && product.user === userInfo._id && (
+                 <ListGroup.Item>
+                    <Button
+                      variant='danger' // Red color
+                      className='btn-block'
+                      onClick={deleteHandler}
+                    >
+                      Delete Listing
+                    </Button>
+                 </ListGroup.Item>
+              )}
             </ListGroup>
           </Card>
         </Col>

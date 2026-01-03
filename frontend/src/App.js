@@ -6,6 +6,7 @@ import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import PostItemScreen from './screens/PostItemScreen';
 import ProductScreen from './screens/ProductScreen';
+import RegisterScreen from './screens/RegisterScreen';
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
             <Route path="/login" element={<LoginScreen />} />
             <Route path="/post-item" element={<PostItemScreen />} />
             <Route path="/product/:id" element={<ProductScreen />} />
+            <Route path="/register" element={<RegisterScreen />} />
             {/* We will add the Login and Post Item routes here later */}
           </Routes>
         </Container>
