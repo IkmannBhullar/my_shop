@@ -5,30 +5,32 @@ import axios from 'axios';
 
 const ProductScreen = () => {
   const [product, setProduct] = useState({});
-  const [qty, setQty] = useState(1); // <--- State for Quantity
+  const [qty, setQty] = useState(1);
   const { id } = useParams();
   const navigate = useNavigate();
 
+  // 1. Get Logged In User
   const userInfo = localStorage.getItem('userInfo')
     ? JSON.parse(localStorage.getItem('userInfo'))
     : null;
 
   useEffect(() => {
     const fetchProduct = async () => {
-      const { data } = await axios.get(`/api/products/${id}`);
-      setProduct(data);
+      try {
+        const { data } = await axios.get(`/api/products/${id}`);
+        setProduct(data);
+      } catch (error) {
+        console.error("Error fetching product");
+      }
     };
     fetchProduct();
   }, [id]);
 
-  // --- NEW: Add to Cart Logic ---
   const addToCartHandler = () => {
-    // 1. Get existing cart from storage
     let cartItems = localStorage.getItem('cartItems') 
       ? JSON.parse(localStorage.getItem('cartItems')) 
       : [];
 
-    // 2. Create the item object
     const item = {
       product: product._id,
       name: product.name,
@@ -38,30 +40,38 @@ const ProductScreen = () => {
       qty: Number(qty)
     };
 
-    // 3. Check if item already exists
     const existItem = cartItems.find((x) => x.product === item.product);
 
     if (existItem) {
-      // If it exists, update the quantity
       cartItems = cartItems.map((x) => 
         x.product === existItem.product ? item : x
       );
     } else {
-      // If not, push new item
       cartItems.push(item);
     }
 
-    // 4. Save back to storage
     localStorage.setItem('cartItems', JSON.stringify(cartItems));
-
-    // 5. Go to Cart Page
     navigate('/cart');
   };
 
+  // --- NEW: DELETE HANDLER ---
   const deleteHandler = async () => {
-     // ... (Keep your existing delete logic here if you want)
-     // For brevity, I'm skipping repeating the delete logic, 
-     // but you can paste your delete function from Phase 17 here.
+    if (window.confirm('Are you sure you want to delete this item?')) {
+      try {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        };
+
+        await axios.delete(`/api/products/${id}`, config);
+        
+        alert('Item Deleted!');
+        navigate('/'); // Go back home
+      } catch (error) {
+        alert('Could not delete. You might not be the owner.');
+      }
+    }
   };
 
   return (
@@ -92,7 +102,6 @@ const ProductScreen = () => {
                 </Row>
               </ListGroup.Item>
 
-              {/* --- NEW: QUANTITY SELECTOR --- */}
               {product.countInStock > 0 && (
                 <ListGroup.Item>
                   <Row>
@@ -103,7 +112,6 @@ const ProductScreen = () => {
                         value={qty}
                         onChange={(e) => setQty(e.target.value)}
                       >
-                        {/* Create options [1, 2, 3...] based on stock */}
                         {[...Array(product.countInStock).keys()].map((x) => (
                           <option key={x + 1} value={x + 1}>
                             {x + 1}
@@ -117,14 +125,28 @@ const ProductScreen = () => {
 
               <ListGroup.Item>
                 <Button
-                  onClick={addToCartHandler} // <--- Attach the Click Event
-                  className='btn-block'
+                  onClick={addToCartHandler}
+                  className='btn-block w-100'
                   type='button'
                   disabled={product.countInStock === 0}
                 >
                   Add To Cart
                 </Button>
               </ListGroup.Item>
+
+              {/* --- NEW: DELETE BUTTON (Only shows if YOU own it) --- */}
+              {userInfo && product.user === userInfo._id && (
+                <ListGroup.Item>
+                  <Button
+                    onClick={deleteHandler}
+                    className='btn-block w-100 btn-danger'
+                    type='button'
+                  >
+                    Delete Item
+                  </Button>
+                </ListGroup.Item>
+              )}
+              
             </ListGroup>
           </Card>
         </Col>

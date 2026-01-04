@@ -12,7 +12,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "cloudinary": "^1.41.3",
     "concurrently": "^9.2.1",
-    "framer-motion": "^12.23.26"
+    "framer-motion": "^12.23.26",
+    "multer-storage-cloudinary": "^4.0.0"
   }
 }
