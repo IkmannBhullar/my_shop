@@ -2,8 +2,23 @@ const Product = require('../models/productModel');
 
 // @desc    Fetch all products
 // @route   GET /api/products
+// @desc    Fetch all products
+// @route   GET /api/products
+// @access  Public
 const getProducts = async (req, res) => {
-    const products = await Product.find({});
+    // 1. Check if there is a keyword (e.g. ?keyword=iPhone)
+    const keyword = req.query.keyword
+    ? {
+        name: {
+          $regex: req.query.keyword, // Match part of the name
+          $options: 'i',             // Case insensitive (iphone = iPhone)
+        },
+      }
+    : {};
+
+    // 2. Find products that match the keyword (or all if no keyword)
+    const products = await Product.find({ ...keyword });
+    
     res.json(products);
 };
 
@@ -21,23 +36,36 @@ const getProductById = async (req, res) => {
 // @desc    Create a product
 // @route   POST /api/products
 // @access  Private
+// @desc    Create a product
+// @route   POST /api/products
+// @access  Private/Admin
 const createProduct = async (req, res) => {
-    const { name, price, description, image, brand, category } = req.body;
+  // 1. We extract the values sent from the frontend
+  const {
+    name,
+    price,
+    description,
+    image,
+    brand,
+    category,
+    countInStock, // <--- THIS WAS MISSING!
+  } = req.body;
 
-    const product = new Product({
-        name,
-        price,
-        user: req.user._id, // Link the product to the logged-in user!
-        image,
-        brand,
-        category,
-        countInStock: 0,
-        numReviews: 0,
-        description,
-    });
+  // 2. We create the new product using those values
+  const product = new Product({
+    name,
+    price,
+    user: req.user._id,
+    image,
+    brand,
+    category,
+    countInStock, // <--- THIS WAS MISSING!
+    numReviews: 0,
+    description,
+  });
 
-    const createdProduct = await product.save();
-    res.status(201).json(createdProduct);
+  const createdProduct = await product.save();
+  res.status(201).json(createdProduct);
 };
 
 // @desc    Delete a product

@@ -1,8 +1,9 @@
 import React from 'react';
 import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
-import { FaUser, FaPlus } from 'react-icons/fa';
+import { FaUser, FaPlus, FaShoppingCart} from 'react-icons/fa';
 import { LinkContainer } from 'react-router-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import SearchBox from './SearchBox';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -23,13 +24,18 @@ const Header = () => {
       <Navbar bg="dark" variant="dark" expand="lg" collapseOnSelect>
         <Container>
           <LinkContainer to="/">
-            <Navbar.Brand>ProShop</Navbar.Brand>
+            <Navbar.Brand>SwapSpot</Navbar.Brand>
           </LinkContainer>
           
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
+            <SearchBox />
             <Nav className="ms-auto">
-              
+              <LinkContainer to="/cart">
+            <Nav.Link>
+                <FaShoppingCart /> Cart
+            </Nav.Link>
+          </LinkContainer>
               <LinkContainer to="/post-item">
                 <Nav.Link>
                     <FaPlus /> Post Item

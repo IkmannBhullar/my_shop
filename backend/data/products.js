@@ -14,7 +14,7 @@ const products = [
   },
   {
     name: 'iPhone 13 Pro 256GB Memory',
-    image: '/images/phone.jpg',
+    image: '/images/iphone13.jpg',
     description:
       'Introducing the iPhone 13 Pro. A transformative triple-camera system that adds tons of capability without complexity. An unprecedented leap in battery life',
     brand: 'Apple',

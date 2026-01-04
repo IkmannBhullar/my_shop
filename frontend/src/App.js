@@ -7,6 +7,11 @@ import LoginScreen from './screens/LoginScreen';
 import PostItemScreen from './screens/PostItemScreen';
 import ProductScreen from './screens/ProductScreen';
 import RegisterScreen from './screens/RegisterScreen';
+import CartScreen from './screens/CartScreen';
+import ShippingScreen from './screens/ShippingScreen';
+import PaymentScreen from './screens/PaymentScreen';
+import PlaceOrderScreen from './screens/PlaceOrderScreen';
+import OrderScreen from './screens/OrderScreen';
 
 const App = () => {
   return (
@@ -20,7 +25,11 @@ const App = () => {
             <Route path="/post-item" element={<PostItemScreen />} />
             <Route path="/product/:id" element={<ProductScreen />} />
             <Route path="/register" element={<RegisterScreen />} />
-            {/* We will add the Login and Post Item routes here later */}
+            <Route path="/cart" element={<CartScreen />} />
+            <Route path="/shipping" element={<ShippingScreen />} />
+            <Route path="/payment" element={<PaymentScreen />} />
+            <Route path="/placeorder" element={<PlaceOrderScreen />} />
+            <Route path="/order/:id" element={<OrderScreen />} />
           </Routes>
         </Container>
       </main>

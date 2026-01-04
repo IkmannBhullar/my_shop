@@ -1,4 +1,3 @@
-// A form to ask for item details.
 import React, { useState } from 'react';
 import { Form, Button, Container } from 'react-bootstrap';
 import axios from 'axios';
@@ -10,14 +9,38 @@ const PostItemScreen = () => {
   const [image, setImage] = useState('');
   const [brand, setBrand] = useState('');
   const [category, setCategory] = useState('');
+  // --- CHANGE 1: Add State for Stock ---
+  const [countInStock, setCountInStock] = useState(0); 
   const [description, setDescription] = useState('');
+  const [uploading, setUploading] = useState(false);
 
   const navigate = useNavigate();
 
+  const uploadFileHandler = async (e) => {
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append('image', file);
+    setUploading(true);
+
+    try {
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      };
+
+      const { data } = await axios.post('/api/upload', formData, config);
+
+      setImage(data);
+      setUploading(false);
+    } catch (error) {
+      console.error(error);
+      setUploading(false);
+    }
+  };
+
   const submitHandler = async (e) => {
     e.preventDefault();
-    
-    // 1. Get the User Token from storage
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
     if (!userInfo) {
@@ -29,21 +52,21 @@ const PostItemScreen = () => {
         const config = {
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${userInfo.token}`, // <--- Show the badge!
+                Authorization: `Bearer ${userInfo.token}`,
             },
         };
 
         await axios.post(
             '/api/products',
-            { name, price, image, brand, category, description },
+            // --- CHANGE 2: Send countInStock to backend ---
+            { name, price, image, brand, category, description, countInStock },
             config
         );
 
         alert('Item Posted!');
-        navigate('/'); // Go back home
+        navigate('/');
     } catch (error) {
         alert('Error posting item');
-        console.error(error);
     }
   };
 
@@ -62,14 +85,29 @@ const PostItemScreen = () => {
         </Form.Group>
 
         <Form.Group className='my-3'>
-            <Form.Label>Image URL (Copy from Google Images)</Form.Label>
-            <Form.Control type='text' placeholder='http://example.com/image.jpg' value={image} onChange={(e) => setImage(e.target.value)} />
+            <Form.Label>Image</Form.Label>
+            <Form.Control type='text' placeholder='Image path' value={image} onChange={(e) => setImage(e.target.value)} disabled />
+            <Form.Control 
+              type='file' 
+              id='image-file'
+              label='Choose File'
+              custom
+              onChange={uploadFileHandler}
+            ></Form.Control>
+            {uploading && <div>Uploading...</div>}
         </Form.Group>
 
         <Form.Group className='my-3'>
             <Form.Label>Brand</Form.Label>
             <Form.Control type='text' placeholder='Enter brand' value={brand} onChange={(e) => setBrand(e.target.value)} />
         </Form.Group>
+
+        {/* --- CHANGE 3: Add Count In Stock Input --- */}
+        <Form.Group className='my-3'>
+            <Form.Label>Count In Stock</Form.Label>
+            <Form.Control type='number' placeholder='Enter stock quantity' value={countInStock} onChange={(e) => setCountInStock(e.target.value)} />
+        </Form.Group>
+        {/* ------------------------------------------ */}
 
         <Form.Group className='my-3'>
             <Form.Label>Category</Form.Label>

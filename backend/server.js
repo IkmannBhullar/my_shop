@@ -1,62 +1,19 @@
-// // IMPORTSLIBRARIES
-// // We need 'express' to build the web server.
-// const express = require('express');
-
-// // We need 'dotenv' to read secret variables from a .env file (we will create this later).
-// const dotenv = require('dotenv');
-
-// // We need 'cors' to allow our future Frontend to talk to this Backend.
-// const cors = require('cors');
-
-// const Product = require('./models/productModel');
-
-// const userRoutes = require('./routes/userRoutes');
-
-// // 2. CONFIGURATION
-// // This command loads the environment variables (secrets).
-// dotenv.config();
-
-
-
-// const connectDB = require('./config/db'); // <--- ADD THIS LINE
-
-// connectDB(); // <--- ADD THIS LINE (Call the function to connect)
-
-// // ... rest of the code ...
-// // Initialize the express application. 'app' is now our server object.
-// const app = express();
-
-// // 3. MIDDLEWARE
-// // This allows the server to accept JSON data (like when a user sends a login form).
-// app.use(express.json()); 
-
-// // This tells the browser it's okay for the frontend to request data from here.
-// app.use(cors());
-
-// app.use('/api/users', userRoutes); //get user routes
-
-
-
-// // Starts the server on port 5001
-// const PORT = process.env.PORT || 5001;
-
-// // This command actually turns the server on.
-// app.listen(PORT, () => {
-//     // This logs a message to your terminal so you know it worked.
-//     console.log(`Server running on port ${PORT}`);
-// });
-
-
+const path = require('path'); // <--- 1. Import path
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/db');
+
 // Import Routes
-const productRoutes = require('./routes/productRoutes'); // <--- NEW
+const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
+const uploadRoutes = require('./routes/uploadRoutes'); // <--- 2. Import upload routes
+const orderRoutes = require('./routes/orderRoutes');
 
 dotenv.config();
-connectDB();
+
+connectDB(); // <--- 3. Connect to Database
+
 const app = express();
 
 app.use(express.json());
@@ -66,9 +23,19 @@ app.get('/', (req, res) => {
     res.send('API is running...');
 });
 
-// Use Routes
-app.use('/api/products', productRoutes); // <--- NEW
+// 4. Use Routes
+app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/upload', uploadRoutes);
+
+// 5. Make the "uploads" folder accessible to the browser
+// We use the global __dirname directly to avoid conflicts
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
+app.use('/api/orders', orderRoutes);
 
 const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
