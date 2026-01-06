@@ -12,7 +12,7 @@ import ShippingScreen from './screens/ShippingScreen';
 import PaymentScreen from './screens/PaymentScreen';
 import PlaceOrderScreen from './screens/PlaceOrderScreen';
 import OrderScreen from './screens/OrderScreen';
-
+import Footer from './components/Footer';
 const App = () => {
   return (
     <Router>
@@ -33,6 +33,7 @@ const App = () => {
           </Routes>
         </Container>
       </main>
+      <Footer />
     </Router>
   );
 };
