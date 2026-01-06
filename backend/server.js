@@ -1,4 +1,4 @@
-const path = require('path'); // <--- 1. Import path
+const path = require('path');
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
@@ -7,32 +7,40 @@ const connectDB = require('./config/db');
 // Import Routes
 const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
-const uploadRoutes = require('./routes/uploadRoutes'); // <--- 2. Import upload routes
+const uploadRoutes = require('./routes/uploadRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 
 dotenv.config();
-
-connectDB(); // <--- 3. Connect to Database
+connectDB();
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
-app.get('/', (req, res) => {
-    res.send('API is running...');
-});
-
-// 4. Use Routes
+// --- ROUTES ---
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/orders', orderRoutes);
 app.use('/api/upload', uploadRoutes);
 
-// 5. Make the "uploads" folder accessible to the browser
-// We use the global __dirname directly to avoid conflicts
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// --- NOTE: We removed the old '/uploads' static line ---
+// Since you use Cloudinary, you don't need to serve local files anymore.
 
-app.use('/api/orders', orderRoutes);
+// --- DEPLOYMENT LOGIC ---
+const __dirname1 = path.resolve();
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname1, '/frontend/build')));
+
+  app.get('*', (req, res) =>
+    res.sendFile(path.resolve(__dirname1, 'frontend', 'build', 'index.html'))
+  );
+} else {
+  app.get('/', (req, res) => {
+    res.send('API is running....');
+  });
+}
 
 const PORT = process.env.PORT || 5001;
 

@@ -2,10 +2,13 @@
   "name": "my-shop",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {
+"scripts": {
+    "start": "node backend/server.js",
+    "server": "node backend/server.js",
     "client": "npm start --prefix frontend",
-    "server": "npm run dev --prefix backend",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "data:import": "node backend/seeder",
+    "build": "npm install --prefix frontend && npm run build --prefix frontend"
   },
   "keywords": [],
   "author": "",
