@@ -4,7 +4,9 @@ SwapSpot is a fully functional e-commerce application built from scratch using t
 
 ## 🚀 Live Demo
 
-[Link to Live Site](https://your-app-url.onrender.com)
+[Link to Live Site]((https://swap-spot.onrender.com/))
+
+Please give it about 1 minute or so to render!
 
 ## ✨ Key Features
 
